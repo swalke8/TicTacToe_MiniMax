@@ -25,61 +25,86 @@ Game::~Game() {
 
 void Game::run() {
     promptGameType();
+    setupGame();
+    executeGame();
 }
 
 void Game::promptGameType() {
-    int value = 0;
+    gameType = 0;
 
     cout << "Select a game type: " << endl
-            << "1. Human vs. Computer" << endl
-            << "2. Computer vs. Computer" << endl
+            << "1. Human vs. Human" << endl
+            << "2. Human vs. Computer" << endl
+            << "3. Computer vs. Computer" << endl
             << ": ";
-    while (value < 1 || value > 2)
+    while (gameType < 1 || gameType > 3)
     {
-        cin >> value;
+        cin >> gameType;
         if (cin.fail())
         {
             cin.clear();
             cin.ignore(1000, '\n');
-            value = -1;
+            gameType = -1;
         }
     }
 
-    if (value == 1)
-    {
-        player1 = new HumanPlayer(gameBoard, manager);
-        player2 = new MiniMaxComputer(gameBoard);
-    }
+    if (gameType == 1)
+        createHumanVsHumanGame();
+    else if (gameType == 2)
+        createHumanVsComputerGame();
     else
-    {
-        player1 = new MiniMaxComputer(gameBoard);
-        player2 = new MiniMaxComputer(gameBoard);
-    }
+        createComputerVsComputerGame();
+}
 
+void Game::setupGame() {
     player1->setPlayer(1);
     player2->setPlayer(-1);
 
     cout << endl << endl;
     gameBoard->printBoard();
     cout << endl << endl;
+}
 
-    while(true)
+void Game::executeGame() {
+    while(!observer->isGameOver())
     {
-        if (!observer->isGameOver())
-            player1->makeMove();
-        else
-            break;
-        if(!observer->isGameOver())
-            player2->makeMove();
-        else
-            break;
-        gameBoard->printBoard();
-        cout << endl << endl;
+        playerMove();
+        displayBoard();
     }
 
     gameBoard->printBoard();
 
-    cout << observer->getWinner() << endl;
-
+    displayWinner();
 }
 
+void Game::displayWinner() {
+    cout << observer->getWinner() << endl;
+}
+
+void Game::playerMove() {
+    player1->makeMove();
+    if (gameType == 1)
+        displayBoard();
+    if(!observer->isGameOver())
+            player2->makeMove();
+}
+
+void Game::displayBoard() {
+     gameBoard->printBoard();
+     cout << endl << endl;
+}
+
+void Game::createHumanVsHumanGame() {
+    player1 = new HumanPlayer(gameBoard, manager);
+    player2 = new HumanPlayer(gameBoard, manager);
+}
+
+void Game::createHumanVsComputerGame() {
+    player1 = new HumanPlayer(gameBoard, manager);
+    player2 = new MiniMaxComputer(gameBoard);
+}
+
+void Game::createComputerVsComputerGame() {
+    player1 = new MiniMaxComputer(gameBoard);
+    player2 = new MiniMaxComputer(gameBoard);
+}

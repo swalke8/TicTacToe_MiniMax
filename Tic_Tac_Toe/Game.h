@@ -30,8 +30,17 @@ private:
     BoardManager * manager;
 
     int BOARD_SIZE;
+    int gameType;
 
     void promptGameType();
+    void createHumanVsHumanGame();
+    void createHumanVsComputerGame();
+    void createComputerVsComputerGame();
+    void setupGame();
+    void executeGame();
+    void displayBoard();
+    void playerMove();
+    void displayWinner();
 };
 
 #endif	/* GAME_H */
